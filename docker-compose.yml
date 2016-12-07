@@ -1,0 +1,36 @@
+version: '2'
+services:
+  web:
+      image: nginx:latest
+      container_name: itrt_web
+      ports:
+        - 8080:80
+      volumes:
+        - ./Backend:/code
+        - ./site.conf:/etc/nginx/conf.d/default.conf
+        - ./JS_App:/jsapp
+      links:
+        - php
+  composer:
+      restart: 'no'
+      image: composer/composer
+      command: install
+      volumes:
+        - ./Backend/src:/app
+  php:
+      build: images/php_itrt
+      container_name: itrt_php
+      volumes:
+        - ./Backend:/code
+  db:
+      image: mysql:5.7
+      container_name: itrt_db
+      volumes:
+        - ./db_data:/var/lib/mysql
+      ports:
+        - 3306:3306
+      environment:
+         MYSQL_ROOT_PASSWORD: Secret_P4ssw0rd
+         MYSQL_DATABASE: itrt
+         MYSQL_USER: itrt
+         MYSQL_PASSWORD: Itrt_P4ssw0rd

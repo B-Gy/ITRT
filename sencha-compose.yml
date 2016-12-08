@@ -1,0 +1,8 @@
+version: '2'
+services:
+  sencha:
+      build: images/sencha_itrt
+      container_name: itrt_sencha
+      volumes:
+        - ./JS_App/extjs:/project
+        - ./downloads/extjs:/extjs

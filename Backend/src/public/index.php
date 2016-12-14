@@ -10,13 +10,22 @@ $app = new \Slim\App;
 
 $app->get('/folders/[{parentID}]', function (Request $request, Response $response, $args) {
   $conn = getConnection();
-  if(isset($args['parentID'])){
+  $parentID = isset($args['parentID']) ? (int)$args['parentID'] : 0;
+  if($parentID > 0){
+    $parentStatement = $conn->prepare("SELECT DISTINCT parentid FROM folder WHERE parentid IN (SELECT id FROM folder WHERE parentid = :parentid);");
+    $parentStatement->execute(array(':parentid' => $parentID));
+    $parents = $parentStatement->fetchAll(PDO::FETCH_COLUMN, 0);
     $statement = $conn->prepare("SELECT id, name FROM folder WHERE parentid = :parentid ORDER BY name;");
-    $statement->execute(array(':parentid' => $args['parentID']));
+    $statement->execute(array(':parentid' => $parentID));
   }else{
+    $parentStatement = $conn->query("SELECT DISTINCT parentid FROM folder WHERE parentid IN (SELECT id FROM folder WHERE parentid IS NULL);");
+    $parents = $parentStatement->fetchAll(PDO::FETCH_COLUMN, 0);
     $statement = $conn->query("SELECT id, name FROM folder WHERE parentid IS NULL ORDER BY name;");
   }
   $folders = $statement->fetchAll(PDO::FETCH_OBJ);
+  foreach($folders as $key => $folder){
+    $folders[$key]->leaf = !in_array($folder->id, $parents);
+  }
   return $response->withJson($folders);
 });
 

@@ -3,6 +3,8 @@ services:
   sencha:
       build: images/sencha_itrt
       container_name: itrt_sencha
+      ports:
+        - 1841:1841
       volumes:
         - ./JS_App/extjs:/project
         - ./downloads/extjs:/extjs

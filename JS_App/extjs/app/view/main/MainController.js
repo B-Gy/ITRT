@@ -9,13 +9,7 @@ Ext.define('ITRT.view.main.MainController', {
 
     alias: 'controller.main',
 
-    onItemSelected: function (sender, record) {
-        Ext.Msg.confirm('Confirm', 'Are you sure?', 'onConfirm', this);
-    },
-
-    onConfirm: function (choice) {
-        if (choice === 'yes') {
-            //
-        }
+    folderSelected: function(treePanel, record, index, options) {
+      Ext.Msg.alert('Folder selected', Ext.String.format('With name: {0} and id: {1}', record.get('name'), record.get('id')));
     }
 });
